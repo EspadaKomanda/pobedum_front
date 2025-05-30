@@ -67,7 +67,7 @@ export default function MakeHistory() {
     const [settings, setSettings] = useState({
         model: 'remote',
         colorScheme: 'color',
-        resolution: '512x512',
+        resolution: '1024x1024',
         useFrameTime: 'false',
         frameTime: 5
     });
