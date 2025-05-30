@@ -160,7 +160,7 @@ export default function Profile() {
   useEffect(() => {
     const fetchLetters = async () => {
       try {
-        const response = await fetch(API_BASE_URL + "/video/videos/997082e4-e197-4819-8f1d-fffe609cff9a?page=0&size=100", {
+        const response = await fetch(API_BASE_URL + "/video/videos?page=0&size=100", {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
