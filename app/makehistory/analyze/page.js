@@ -74,19 +74,19 @@ export default function Analyze() {
 
   const handleVoiceTextChange = (index, newVoiceText) => {
     const newAnalysis = [...analysis];
-    newAnalysis[index] = { ...newAnalysis[index], voice_text: newVoiceText };
+    newAnalysis[index] = { ...newAnalysis[index], text: newVoiceText };
     setAnalysis(newAnalysis);
   };
 
   const handleVoiceGenderChange = (index, newGender) => {
     const newAnalysis = [...analysis];
-    newAnalysis[index] = { ...newAnalysis[index], voice_gender: newGender };
+    newAnalysis[index] = { ...newAnalysis[index], voice: newGender };
     setAnalysis(newAnalysis);
   };
 
   const handleVoiceMoodChange = (index, newMood) => {
     const newAnalysis = [...analysis];
-    newAnalysis[index] = { ...newAnalysis[index], voice_mood: newMood };
+    newAnalysis[index] = { ...newAnalysis[index], mood: newMood };
     setAnalysis(newAnalysis);
   };
 
@@ -260,16 +260,16 @@ export default function Analyze() {
                         <div className="space-y-2">
                           <Label>Пол голоса</Label>
                           <RadioGroup
-                            value={scene.voice_gender}
+                            value={scene.voice}
                             onValueChange={(value) => handleVoiceGenderChange(index, value)}
                             className="flex gap-4"
                           >
                             <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="male" id={`male-${index}`} />
+                              <RadioGroupItem value="kirill" id={`male-${index}`} />
                               <Label htmlFor={`male-${index}`}>Мужской</Label>
                             </div>
                             <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="female" id={`female-${index}`} />
+                              <RadioGroupItem value="dasha" id={`female-${index}`} />
                               <Label htmlFor={`female-${index}`}>Женский</Label>
                             </div>
                           </RadioGroup>
@@ -277,7 +277,7 @@ export default function Analyze() {
                         <div className="space-y-2">
                           <Label>Окраска голоса</Label>
                           <RadioGroup
-                            value={scene.voice_mood}
+                            value={scene.mood}
                             onValueChange={(value) => handleVoiceMoodChange(index, value)}
                             className="flex gap-4"
                           >
@@ -304,14 +304,14 @@ export default function Analyze() {
                       </h3>
                       {editingIndex === index ? (
                         <Textarea
-                          value={scene.voice_text}
+                          value={scene.text}
                           onChange={(e) => handleVoiceTextChange(index, e.target.value)}
                           className="font-mono text-sm"
                           rows={5}
                         />
                       ) : (
                         <pre className="text-sm bg-muted p-3 rounded whitespace-pre-wrap">
-                          {scene.voice_text}
+                          {scene.text}
                         </pre>
                       )}
                     </div>
