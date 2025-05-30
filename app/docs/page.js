@@ -69,7 +69,7 @@ export default function Documentation() {
       description: 'Создает новый запрос на генерацию видео из текста письма.',
       code: `curl -X POST ${API_BASE_URL}/video-generation \\
   -H 'Content-Type: application/json' \\
-  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \\
+  -H 'Authorization: YOUR_JWT_TOKEN' \\
   -d '{
     "text": "Текст письма на русском языке",
     "colorScheme": "color",
@@ -96,7 +96,7 @@ export default function Documentation() {
       description: 'Возвращает текущий статус генерации видео.',
       code: `curl -X GET ${API_BASE_URL}/video-generation/status/550e8400-e29b-41d4-a716-446655440000 \\
   -H 'Content-Type: application/json' \\
-  -H 'Authorization: Bearer YOUR_JWT_TOKEN'`,
+  -H 'Authorization: YOUR_JWT_TOKEN'`,
       response: `{
   "status": "CREATING_IMAGES",
   "progress": 50,
@@ -119,7 +119,7 @@ export default function Documentation() {
       description: 'Возвращает текущую позицию в очереди на генерацию.',
       code: `curl -X GET ${API_BASE_URL}/video-generation/queue-position/550e8400-e29b-41d4-a716-446655440000 \\
   -H 'Content-Type: application/json' \\
-  -H 'Authorization: Bearer YOUR_JWT_TOKEN'`,
+  -H 'Authorization: YOUR_JWT_TOKEN'`,
       response: `5`,
       params: [
         { name: 'videoId', type: 'string', description: 'Идентификатор видео (UUID)' }
@@ -136,7 +136,7 @@ export default function Documentation() {
       description: 'Возвращает информацию о сгенерированном видео.',
       code: `curl -X GET ${API_BASE_URL}/videos/550e8400-e29b-41d4-a716-446655440000 \\
   -H 'Content-Type: application/json' \\
-  -H 'Authorization: Bearer YOUR_JWT_TOKEN'`,
+  -H 'Authorization: YOUR_JWT_TOKEN'`,
       response: `{
   "videoId": "550e8400-e29b-41d4-a716-446655440000",
   "videoUrl": "https://storage.example.com/videos/550e8400.mp4",
@@ -186,11 +186,11 @@ export default function Documentation() {
             <h2 className="text-2xl font-semibold mb-4">Аутентификация</h2>
             <p className="text-muted-foreground mb-4">
               Все запросы к API должны содержать JWT токен в заголовке Authorization.
-              Токен передается в формате Bearer. Получить токен можно в личном кабинете.
+              Получить токен можно в личном кабинете.
             </p>
             <div className="mb-4">
               <h3 className="text-lg font-medium mb-2">Формат заголовка</h3>
-              <CodeBlock code="Authorization: Bearer YOUR_JWT_TOKEN" />
+              <CodeBlock code="Authorization: YOUR_JWT_TOKEN" />
             </div>
             <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
               <p className="text-yellow-700">

@@ -1,57 +1,16 @@
 'use client';
 
-import {useEffect, useState} from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { useRouter } from 'next/navigation';
+import {useRouter, useSearchParams} from 'next/navigation';
 import { AlertTriangle, ChevronRight, Edit2, Play, X, RefreshCw } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
-
-const sampleAnalysis = [
-  {
-    "text": "Здравствуйте, мама, брат и сестра! Примите мой родной боевой с фронта и массу самых наилучших пожеланий в вашей жизни и здоровья.",
-    "voice_text": "<speak>Здравствуйте, мама<break time='300ms'/>, брат и сестра! <p>Примите мой родной боевой с фронта и массу самых наилучших пожеланий в вашей жизни и здоровья.</p></speak>",
-    "voice_gender": "male",
-    "voice_mood": "neutral",
-    "subtitles": "Здравствуйте, мама, брат и сестра!\nПримите мой родной боевой с фронта\nи массу самых наилучших пожеланий\nв вашей жизни и здоровья.",
-    "photo_prompt": "A soldier in a worn uniform writing a letter by candlelight, his face showing determination and warmth. The dim light casts shadows on the wooden table. Patriotic illustration, muted lighting, size 1024x1024."
-  },
-  {
-    "text": "Жизнь моя в настоящее время протекает хорошо. Я жив, здоров. Больше трёх лет прошло со дня страшной вашей жизни.",
-    "voice_text": "<speak>Жизнь моя в настоящее время протекает хорошо. <break time='500ms'/> Я жив, здоров. <p>Больше трёх лет прошло со дня страшной вашей жизни.</p></speak>",
-    "voice_gender": "male",
-    "voice_mood": "neutral",
-    "subtitles": "Жизнь моя в настоящее время\nпротекает хорошо. Я жив, здоров.\nБольше трёх лет прошло со дня\nстрашной вашей жизни.",
-    "photo_prompt": "A soldier standing in a field, looking into the distance with a mix of relief and sorrow. The landscape is barren, with a cloudy sky overhead. Patriotic illustration, soft diffused light, size 1024x1024."
-  },
-  {
-    "text": "Эти три с лишним года я переживал и беспокоился о вашей жизни или судьбе. Всё это время я ждал хотя бы одного вашего слова и вот радостный день настал, вы стали свободные.",
-    "voice_text": "<speak>Эти три с лишним года я переживал и беспокоился о вашей жизни или судьбе. <break time='300ms'/> Всё это время я ждал хотя бы одного вашего слова <break time='200ms'/> и вот радостный день настал, <break time='300ms'/> вы стали свободные.</speak>",
-    "voice_gender": "male",
-    "voice_mood": "joyful",
-    "subtitles": "Эти три с лишним года я переживал\nи беспокоился о вашей жизни или\nсудьбе. Всё это время я ждал хотя\nбы одного вашего слова и вот\nрадостный день настал, вы стали\nсвободные.",
-    "photo_prompt": "A man in military uniform smiling faintly as he reads a letter, his eyes reflecting hope. A small window lets in a beam of sunlight. Patriotic illustration, warm sunlight, size 1024x1024."
-  },
-  {
-    "text": "Я много послал вам писем, но ответа не одного не получил, причина этому мне не известна правда, большое спасибо сестрице Лене, сообщила о вас, а ваших писем всё нет.",
-    "voice_text": "<speak>Я много послал вам писем, но ответа не одного не получил, <break time='300ms'/> причина этому мне не известна правда, <break time='200ms'/> большое спасибо сестрице Лене, сообщила о вас, <break time='300ms'/> а ваших писем всё нет.</speak>",
-    "voice_gender": "male",
-    "voice_mood": "strict",
-    "subtitles": "Я много послал вам писем, но\nответа не одного не получил,\nпричина этому мне не известна\nправда, большое спасибо сестрице\nЛене, сообщила о вас, а ваших\nписем всё нет.",
-    "photo_prompt": "A soldier sitting at a desk, his expression a mix of frustration and gratitude as he holds a letter. The room is sparsely furnished with a single lamp. Patriotic illustration, dim lighting, size 1024x1024."
-  },
-  {
-    "text": "Я решил, что вы молчите и я буду молчать, но моё сердце не выдержало, ведь вы мои родные. Решил ещё одно написать и ждать вашего письма. Всё. До свидания.",
-    "voice_text": "<speak>Я решил, что вы молчите и я буду молчать, <break time='300ms'/> но моё сердце не выдержало, ведь вы мои родные. <break time='500ms'/> Решил ещё одно написать и ждать вашего письма. <break time='700ms'/> Всё. <break time='300ms'/> До свидания.</speak>",
-    "voice_gender": "male",
-    "voice_mood": "neutral",
-    "subtitles": "Я решил, что вы молчите и я буду\nмолчать, но моё сердце не выдержало,\nведь вы мои родные. Решил ещё одно\nнаписать и ждать вашего письма.\nВсё. До свидания.",
-    "photo_prompt": "A soldier finishing a letter, his hand slightly trembling as he signs off. The background shows a simple barracks with a faint glow from a lantern. Patriotic illustration, soft warm light, size 1024x1024."
-  }
-];
+import { toast } from 'sonner';
+import {API_BASE_URL, API_PYTHON_URL} from "@/app/config";
 
 const ssmlTags = [
   { tag: 'break', description: 'Добавить паузу' },
@@ -64,30 +23,48 @@ const ssmlTags = [
 
 export default function Analyze() {
   const router = useRouter();
-  const [analysis, setAnalysis] = useState([]);
+  const [analysis, setAnalysis] = useState(null);
   const [editingIndex, setEditingIndex] = useState(null);
   const [error, setError] = useState(null);
   const [showSsmlHelp, setShowSsmlHelp] = useState(false);
   const [isRegenerating, setIsRegenerating] = useState(false);
+  const searchParams = useSearchParams();
+  const taskId = searchParams.get('taskId');
 
   useEffect(() => {
-    // Get analysis data from localStorage
-    const analysisData = localStorage.getItem('letterAnalysis');
-    if (analysisData) {
+    let isMounted = true; // Флаг для отслеживания mounted состояния
+
+    const fetchAnalysis = async () => {
       try {
-        const data = JSON.parse(analysisData);
-        if (data.error) {
-          setError(data.error);
+        const response = await fetch(API_PYTHON_URL + "/prompt/" + taskId, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
+
+        if (!isMounted) return; // Не обновлять состояние, если компонент размонтирован
+
+        if (response.ok) {
+          const data = await response.json();
+          setAnalysis(data.content);
         } else {
-          setAnalysis(data);
+          setError('Данные анализа не найдены');
         }
       } catch (e) {
-        setError('Ошибка при обработке данных анализа');
+        if (isMounted) {
+          setError('Ошибка при обработке данных анализа');
+        }
       }
-    } else {
-      setError('Данные анализа не найдены');
-    }
-  }, []);
+    };
+
+    fetchAnalysis();
+
+    // Функция очистки эффекта
+    return () => {
+      isMounted = false;
+    };
+  }, [taskId]); // Добавил taskId в зависимости, чтобы эффект запускался при его изменении
 
   const handleSubtitlesChange = (index, newSubtitles) => {
     const newAnalysis = [...analysis];
@@ -115,14 +92,53 @@ export default function Analyze() {
 
   const handleRegenerate = async () => {
     setIsRegenerating(true);
-    // Здесь будет логика отправки запроса на перегенерацию
-    setTimeout(() => {
+    try {
+      const response = await fetch(API_PYTHON_URL + "/prompt", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(analysis)
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setAnalysis(data);
+        toast.success('Анализ успешно обновлен');
+      } else {
+        toast.error(data.error || 'Ошибка при обновлении анализа');
+      }
+    } catch (error) {
+      toast.error('Ошибка подключения к серверу');
+    } finally {
       setIsRegenerating(false);
-    }, 2000);
+    }
   };
 
-  const handleContinue = () => {
-    router.push('/makehistory/generate');
+  const handleContinue = async () => {
+    const response = await fetch(API_BASE_URL + "/VideoGeneration", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': localStorage.getItem('token')
+      },
+      body: JSON.stringify({
+        "taskId": taskId,
+        "text": "string",
+        "colorScheme": "string",
+        "resolution": "string",
+        "model": "string",
+        "frameRate": 0
+      })
+    });
+    if (response.ok) {
+      const data = await response.json();
+      localStorage.setItem('videoId', data.pipelineId);
+      router.push('/makehistory/generate');
+    } else {
+      toast.error('Произошла ошибка при генерации видео, попробуйте еще раз');
+      router.push('/makehistory');
+    }
   };
 
   if (error) {
@@ -145,6 +161,22 @@ export default function Analyze() {
               </Button>
             </Card>
           </motion.div>
+        </div>
+      </main>
+    );
+  }
+
+  if (!analysis) {
+    return (
+      <main className="min-h-screen bg-muted py-24">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-center">
+            <div className="animate-pulse flex space-x-2">
+              <div className="w-3 h-3 bg-primary rounded-full"></div>
+              <div className="w-3 h-3 bg-primary rounded-full"></div>
+              <div className="w-3 h-3 bg-primary rounded-full"></div>
+            </div>
+          </div>
         </div>
       </main>
     );

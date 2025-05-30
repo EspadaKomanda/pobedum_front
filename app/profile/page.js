@@ -9,6 +9,8 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Play, Download, Share2, FileText, X, Copy, Key, Plus, Trash2, Pause, Maximize, Minimize } from 'lucide-react';
 import { toast } from 'sonner';
+import {useRouter} from "next/navigation";
+import {API_BASE_URL, API_PYTHON_URL} from "@/app/config";
 
 const generatedMovies = [
   {
@@ -145,6 +147,40 @@ export default function Profile() {
   const [playingVideo, setPlayingVideo] = useState(null);
   const [isPlaying, setIsPlaying] = useState({});
   const [isFullscreen, setIsFullscreen] = useState({});
+  const [generatedMovies, setGeneratedMovies] = useState([]);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!localStorage.getItem('token')) {
+      router.push('/auth');
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchLetters = async () => {
+      try {
+        const response = await fetch(API_BASE_URL + "/video/videos/997082e4-e197-4819-8f1d-fffe609cff9a?page=0&size=100", {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': localStorage.getItem('token')
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setGeneratedMovies(data.content);
+        } else {
+          setError('Данные анализа не найдены');
+        }
+      } catch (error) {
+        setError('Ошибка при получении данных анализа');
+      }
+    };
+
+    fetchLetters();
+  }, []);
 
   const toggleVideo = (movieId) => {
     const video = document.getElementById(`video-${movieId}`);
@@ -204,9 +240,8 @@ export default function Profile() {
     }
   };
 
-  const downloadLetter = (text, title) => {
+  const downloadLetter = (text, title, url) => {
     const blob = new Blob([text], { type: 'text/plain' });
-    const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = `${title}.txt`;
@@ -325,7 +360,7 @@ export default function Profile() {
                       <div className="relative aspect-video">
                         <video
                           id={`video-${movie.id}`}
-                          src={movie.videoUrl}
+                          src={movie.videoUrl.replace("minio", "81.200.156.61")}
                           className="w-full h-full object-cover"
                           poster={movie.thumbnail}
                           onClick={() => toggleVideo(movie.id)}
@@ -379,7 +414,7 @@ export default function Profile() {
                             <Button 
                               variant="outline" 
                               size="sm"
-                              onClick={() => downloadVideo(movie.videoUrl, movie.title)}
+                              onClick={() => downloadVideo(movie.videoUrl.replace("minio", "81.200.156.61"), movie.title)}
                               className="flex items-center gap-2"
                             >
                               <Download className="w-4 h-4" />
@@ -388,7 +423,7 @@ export default function Profile() {
                             <Button 
                               variant="outline" 
                               size="sm"
-                              onClick={() => downloadLetter(movie.text, movie.title)}
+                              onClick={() => downloadLetter(movie.text, movie.title, movie.videoUrl.replace("minio", "81.200.156.61"))}
                               className="flex items-center gap-2"
                             >
                               <FileText className="w-4 h-4" />
@@ -537,7 +572,7 @@ export default function Profile() {
                   <div className="mt-6 flex justify-end">
                     <Button
                       variant="outline"
-                      onClick={() => downloadLetter(selectedLetter.text, selectedLetter.title)}
+                      onClick={() => downloadLetter(selectedLetter.text, selectedLetter.title, selectedLetter.videoUrl.replace("minio", "81.200.156.61"))}
                       className="flex items-center gap-2"
                     >
                       <Download className="w-4 h-4" />

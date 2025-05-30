@@ -9,7 +9,7 @@ import {Card} from '@/components/ui/card';
 import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
 import {CustomSlider} from '@/components/ui/custom-slider';
 import {useRouter, useSearchParams} from 'next/navigation';
-import {API_BASE_URL} from "@/app/config";
+import {API_BASE_URL, API_PYTHON_URL} from "@/app/config";
 import {toast} from "sonner";
 
 const CustomSelector = ({options, value, onChange, label}) => {
@@ -99,7 +99,7 @@ export default function MakeHistory() {
     const handleSubmit = async () => {
         setIsLoading(true);
 
-        const result = await fetch(API_BASE_URL + "/video-generation", {
+        const result = await fetch(API_PYTHON_URL + "/prompt", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -118,8 +118,7 @@ export default function MakeHistory() {
         }
         const data = await result.json();
         if (result.ok) {
-            localStorage.setItem('letterAnalysis', JSON.stringify(data));
-            router.push('/makehistory/analyze');
+            router.push('/makehistory/analyze?taskId=' + data.task_id);
         } else {
             if (data.error) {
                 toast.error(data.error);
