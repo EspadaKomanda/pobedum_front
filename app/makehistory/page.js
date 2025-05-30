@@ -266,11 +266,6 @@ export default function MakeHistory() {
                                                 }
                                             ] : [
                                                 {
-                                                    value: '512x512',
-                                                    label: '512x512',
-                                                    description: 'Стандартное качество'
-                                                },
-                                                {
                                                     value: '1024x1024',
                                                     label: '1024x1024',
                                                     description: 'Высокое качество'
